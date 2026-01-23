@@ -11,6 +11,8 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+import { ModeToggle } from "@/components/mode-toggle";
+
 import { Link } from "@tanstack/react-router";
 
 // Menu items.
@@ -53,6 +55,11 @@ export function AppSidebar() {
 							))}
 						</SidebarMenu>
 					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarGroup>
+					<SidebarContent>
+						<ModeToggle />
+					</SidebarContent>
 				</SidebarGroup>
 			</SidebarContent>
 		</Sidebar>
