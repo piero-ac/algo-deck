@@ -47,7 +47,9 @@ export function ReviewsCard() {
 				<CardDescription>Do your reviews.</CardDescription>
 			</CardHeader>
 			<CardFooter>
-				<Button className="w-full">Start Reviews</Button>
+				<Button className="w-full" disabled={review_count === 0}>
+					Start Reviews
+				</Button>
 			</CardFooter>
 		</Card>
 	);
