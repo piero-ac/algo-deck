@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "sonner";
 
 export const Route = createRootRoute({
 	component: () => (
@@ -15,6 +16,7 @@ export const Route = createRootRoute({
 					<main className="w-full">
 						<SidebarTrigger />
 						<Outlet />
+						<Toaster />
 					</main>
 				</SidebarProvider>
 			</ThemeProvider>
