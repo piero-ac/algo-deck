@@ -1,4 +1,4 @@
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
 export function SearchProblemsInput({
@@ -10,7 +10,6 @@ export function SearchProblemsInput({
 }) {
 	return (
 		<Field>
-			{/* <FieldLabel htmlFor="input-field-search">Search</FieldLabel> */}
 			<Input
 				id="input-field-search"
 				type="text"
@@ -18,9 +17,6 @@ export function SearchProblemsInput({
 				value={input}
 				onChange={(e) => onChange(e.target.value)}
 			/>
-			<FieldDescription>
-				Search by Number, Problem Name, Rating
-			</FieldDescription>
 		</Field>
 	);
 }
