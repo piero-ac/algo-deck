@@ -5,6 +5,7 @@ import { ProblemItem } from "@/components/problem-item";
 import { useDebounce } from "use-debounce";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { useLessonsQueue } from "@/context/lessonQueue";
 
 type SearchDataResponse = {
 	page: number;
@@ -34,6 +35,7 @@ function RouteComponent() {
 	const [input, setInput] = useState(search);
 	const [searchDebounced] = useDebounce(input, 1000);
 	const navigate = useNavigate({ from: Route.fullPath });
+	const { add } = useLessonsQueue();
 
 	// Sync input state when URL search param changes (browser back/forward)
 	useEffect(() => {
@@ -135,6 +137,7 @@ function RouteComponent() {
 									problemDifficulty={problem.problem_difficulty}
 									problemTitle={problem.problem_title}
 									problemNumber={problem.problem_number}
+									addProblemToLesson={add}
 								/>
 							);
 						})}
