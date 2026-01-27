@@ -13,6 +13,7 @@ export function ProblemItem({
 	problemTitle,
 	problemDifficulty,
 	addProblemToLesson,
+	problemInQueue,
 }: {
 	problemNumber: number;
 	problemTitle: string;
@@ -22,6 +23,7 @@ export function ProblemItem({
 		problem_title: string;
 		problem_difficulty: string;
 	}) => void;
+	problemInQueue: boolean;
 }) {
 	const [clicked, setClicked] = useState(false);
 	return (
@@ -48,7 +50,7 @@ export function ProblemItem({
 
 							setClicked(true);
 						}}
-						disabled={clicked}
+						disabled={clicked || problemInQueue}
 					>
 						Add to Lesson
 					</Button>

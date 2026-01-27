@@ -13,6 +13,7 @@ type LessonsQueueContextType = {
 	add: (lesson: Lesson) => void;
 	removeNext: () => Lesson | undefined;
 	removeFromQueue: (lesson: Lesson) => void;
+	inQueue: (lesson: Lesson) => boolean;
 };
 
 // Create the context
@@ -26,8 +27,17 @@ export const LessonsQueueProvider = ({
 }) => {
 	const [queue, setQueue] = useState<Lesson[]>([]);
 
+	// Check if problem in queue
+	const inQueue = (lesson: Lesson) => {
+		return queue.some((item) => item.problem_number === lesson.problem_number);
+	};
+
 	// Add a new lesson to the queue
-	const add = (lesson: Lesson) => setQueue((prev) => [...prev, lesson]);
+	const add = (lesson: Lesson) => {
+		if (!inQueue(lesson)) {
+			setQueue((prev) => [...prev, lesson]);
+		}
+	};
 
 	// Remove lesson from the queue
 	const removeFromQueue = (lesson: Lesson) =>
@@ -49,7 +59,7 @@ export const LessonsQueueProvider = ({
 
 	return (
 		<LessonsQueueContext.Provider
-			value={{ queue, add, removeNext, removeFromQueue }}
+			value={{ queue, add, removeNext, removeFromQueue, inQueue }}
 		>
 			{children}
 		</LessonsQueueContext.Provider>

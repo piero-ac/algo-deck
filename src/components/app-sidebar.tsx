@@ -1,4 +1,4 @@
-import { Home, Target, History, BookCheck } from "lucide-react";
+import { Home, Target, History, BookCheck, BookPlus } from "lucide-react";
 
 import {
 	Sidebar,
@@ -26,6 +26,11 @@ const items = [
 		title: "Reviews",
 		url: "/reviews",
 		icon: Target,
+	},
+	{
+		title: "Problems",
+		url: "/problems",
+		icon: BookPlus,
 	},
 	{
 		title: "Lessons",

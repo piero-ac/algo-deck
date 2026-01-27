@@ -35,7 +35,7 @@ function RouteComponent() {
 	const [input, setInput] = useState(search);
 	const [searchDebounced] = useDebounce(input, 1000);
 	const navigate = useNavigate({ from: Route.fullPath });
-	const { add } = useLessonsQueue();
+	const { add, inQueue } = useLessonsQueue();
 
 	// Sync input state when URL search param changes (browser back/forward)
 	useEffect(() => {
@@ -138,6 +138,7 @@ function RouteComponent() {
 									problemTitle={problem.problem_title}
 									problemNumber={problem.problem_number}
 									addProblemToLesson={add}
+									problemInQueue={inQueue(problem)}
 								/>
 							);
 						})}
