@@ -25,7 +25,8 @@ export function ProblemsCard({
 			<CardHeader>
 				<CardTitle>Problems</CardTitle>
 				<CardAction>
-					<Badge variant="secondary">
+					<Badge variant="default">{reviewedProblemsCount}</Badge>
+					<Badge variant="destructive">
 						{problemCount - reviewedProblemsCount}
 					</Badge>
 				</CardAction>
