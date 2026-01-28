@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
 type ReviewCountResponse = {
 	review_count: number;
@@ -36,6 +37,7 @@ export function ReviewsCard() {
 			return false;
 		},
 	});
+	const navigate = useNavigate();
 
 	return (
 		<Card className="w-80">
@@ -47,7 +49,11 @@ export function ReviewsCard() {
 				<CardDescription>Do your reviews.</CardDescription>
 			</CardHeader>
 			<CardFooter>
-				<Button className="w-full" disabled={review_count === 0}>
+				<Button
+					className="w-full"
+					disabled={review_count === 0}
+					onClick={() => navigate({ to: "/reviews" })}
+				>
 					Start Reviews
 				</Button>
 			</CardFooter>
