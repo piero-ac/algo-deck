@@ -11,7 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "@tanstack/react-router";
 
-export function ProblemsCard() {
+export function ProblemsCard({
+	problemCount,
+	reviewedProblemsCount,
+}: {
+	problemCount: number;
+	reviewedProblemsCount: number;
+}) {
 	const navigate = useNavigate();
 
 	return (
@@ -19,7 +25,9 @@ export function ProblemsCard() {
 			<CardHeader>
 				<CardTitle>Problems</CardTitle>
 				<CardAction>
-					<Badge variant="secondary">100</Badge>
+					<Badge variant="secondary">
+						{problemCount - reviewedProblemsCount}
+					</Badge>
 				</CardAction>
 				<CardDescription>Remaining Problems</CardDescription>
 			</CardHeader>
