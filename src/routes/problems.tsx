@@ -35,7 +35,7 @@ function RouteComponent() {
 	const [input, setInput] = useState(search);
 	const [searchDebounced] = useDebounce(input, 1000);
 	const navigate = useNavigate({ from: Route.fullPath });
-	const { add, inQueue } = useLessonsQueue();
+	const { add, inQueue, queue, removeFromQueue } = useLessonsQueue();
 
 	// Sync input state when URL search param changes (browser back/forward)
 	useEffect(() => {
@@ -122,26 +122,65 @@ function RouteComponent() {
 					</div>
 				)}
 
-				<div className="flex flex-col gap-1">
-					{!isLoading && data?.total === 0 && (
-						<p className="text-muted-foreground">No problems found.</p>
-					)}
-					{isLoading && <p>Loading...</p>}
-					{error && <p>Error: {(error as Error).message}</p>}
-					{data &&
-						data.total > 0 &&
-						data.results.map((problem) => {
-							return (
-								<ProblemItem
-									key={problem.problem_number}
-									problemDifficulty={problem.problem_difficulty}
-									problemTitle={problem.problem_title}
-									problemNumber={problem.problem_number}
-									addProblemToLesson={add}
-									problemInQueue={inQueue(problem)}
-								/>
-							);
-						})}
+				<div className="flex gap-4">
+					{/* Problems List Display */}
+					<div className="flex flex-col gap-1 flex-3">
+						{!isLoading && data?.results.length === 0 && (
+							<p className="">No problems found.</p>
+						)}
+						{isLoading && <p>Loading...</p>}
+						{error && <p>Error: {(error as Error).message}</p>}
+						{data &&
+							data.total > 0 &&
+							data.results.map((problem) => {
+								return (
+									<ProblemItem
+										key={problem.problem_number}
+										problemDifficulty={problem.problem_difficulty}
+										problemTitle={problem.problem_title}
+										problemNumber={problem.problem_number}
+										addProblemToLesson={add}
+										problemInQueue={inQueue(problem)}
+									/>
+								);
+							})}
+					</div>
+					{/* Lessons Queue Display */}
+					<div className="flex-1">
+						{queue.length === 0 && (
+							<p>
+								Click on <span className="font-bold">Add to Lesson</span> to
+								create a Queue
+							</p>
+						)}
+						{queue.length > 0 &&
+							queue.map((lesson) => {
+								return (
+									<div
+										key={lesson.problem_number}
+										className="flex items-center mb-2 gap-3 "
+									>
+										<div className="text-center w-50">
+											<p className="text-sm">
+												{lesson.problem_title.slice(0, 20)}...
+											</p>
+										</div>
+										<div className="text-center">
+											<span className="font-bold">
+												[{lesson.problem_number}]
+											</span>
+											<Button
+												variant="destructive"
+												size="xs"
+												onClick={() => removeFromQueue(lesson)}
+											>
+												Remove
+											</Button>
+										</div>
+									</div>
+								);
+							})}
+					</div>
 				</div>
 			</div>
 		</div>
