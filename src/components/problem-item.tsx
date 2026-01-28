@@ -6,7 +6,6 @@ import {
 	ItemDescription,
 	ItemTitle,
 } from "@/components/ui/item";
-import { useState } from "react";
 
 export function ProblemItem({
 	problemNumber,
@@ -25,7 +24,6 @@ export function ProblemItem({
 	}) => void;
 	problemInQueue: boolean;
 }) {
-	const [clicked, setClicked] = useState(false);
 	return (
 		<div className="flex w-full max-w-md flex-col gap-6">
 			<Item variant="outline">
@@ -47,10 +45,8 @@ export function ProblemItem({
 								problem_title: problemTitle,
 								problem_difficulty: problemDifficulty,
 							});
-
-							setClicked(true);
 						}}
-						disabled={clicked || problemInQueue}
+						disabled={problemInQueue}
 					>
 						Add to Lesson
 					</Button>
