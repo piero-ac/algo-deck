@@ -13,18 +13,11 @@ type ReviewHistoryResponse = {
 	reviews: ReviewHistoryItem[];
 };
 
-enum Rating {
-	ONE,
-	TWO,
-	THREE,
-	FOUR,
-}
-
 type ReviewHistoryItem = {
 	id: number;
 	problemNumber: number;
-	rating: Rating;
-	reviewedAt: Date;
+	rating: string;
+	reviewedAt: string;
 	problem: {
 		title: string;
 	};
@@ -43,7 +36,7 @@ async function fetchRecentReviews(): Promise<ReviewHistoryResponse> {
 }
 
 export function ProblemHistoryTable() {
-	const { data } = useQuery({
+	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["reviews", "history"],
 		queryFn: fetchRecentReviews,
 		throwOnError: (error) => {
@@ -51,6 +44,14 @@ export function ProblemHistoryTable() {
 			return false;
 		},
 	});
+	if (isLoading) {
+		return <div>Loading...</div>;
+	}
+
+	if (isError) {
+		return <div>Error loading reviews</div>;
+	}
+
 	return (
 		<Table>
 			<TableHeader>
@@ -63,35 +64,39 @@ export function ProblemHistoryTable() {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{data &&
-					data.reviews.length > 0 &&
+				{data?.reviews?.length ? (
 					data.reviews.map((review) => {
 						const rating = mapRating(review.rating);
 						return (
 							<TableRow key={review.id}>
 								<TableCell>
-									{review.reviewedAt.toLocaleDateString("en-US")}
+									{new Date(review.reviewedAt).toLocaleDateString("en-US")}
 								</TableCell>
 								<TableCell>{review.problemNumber}</TableCell>
 								<TableCell>{review.problem.title}</TableCell>
 								<TableCell>{rating}</TableCell>
 							</TableRow>
 						);
-					})}
+					})
+				) : (
+					<TableRow>
+						<TableCell colSpan={4}>No reviews found</TableCell>
+					</TableRow>
+				)}
 			</TableBody>
 		</Table>
 	);
 }
 
-function mapRating(rating: Rating) {
+function mapRating(rating: string) {
 	switch (rating) {
-		case Rating.ONE:
+		case "ONE":
 			return "Again";
-		case Rating.TWO:
+		case "TWO":
 			return "Hard";
-		case Rating.THREE:
+		case "THREE":
 			return "Good";
-		case Rating.FOUR:
+		case "FOUR":
 			return "Easy";
 		default:
 			return "Again";
