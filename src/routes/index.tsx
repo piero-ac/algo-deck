@@ -11,8 +11,8 @@ export const Route = createFileRoute("/")({
 
 function App() {
 	const { data } = useQuery({
-		queryKey: ["history", "stats"],
-		queryFn: fetchHistoryStats,
+		queryKey: ["reviews", "progress"],
+		queryFn: fetchReviewsProgress,
 		throwOnError: (error) => {
 			toast.error(error.message, { position: "top-right" });
 			return false;
@@ -24,8 +24,9 @@ function App() {
 			{/* Reviews and Add Problems Cards */}
 			<div className="flex justify-center gap-5">
 				<ProblemsCard
-					problemCount={data?.problemsCount || 0}
-					reviewedProblemsCount={data?.reviewedProblemsCount || 0}
+					totalProblems={data?.totalProblems || 0}
+					reviewed={data?.reviewed || 0}
+					remaining={data?.remaining || 0}
 				/>
 				<ReviewsCard />
 			</div>
@@ -37,18 +38,20 @@ function App() {
 	);
 }
 
-type HistoryStats = {
-	problemsCount: number;
-	reviewedProblemsCount: number;
+export type ReviewsProgress = {
+	totalProblems: number;
+	reviewed: number;
+	remaining: number;
 };
 
-async function fetchHistoryStats(): Promise<HistoryStats> {
-	const result = await fetch("/api/history/stats");
+async function fetchReviewsProgress(): Promise<ReviewsProgress> {
+	// TODO: change 1 to appropriate userId when auth is added
+	const result = await fetch("/api/reviews/progress/1");
 
 	if (!result.ok) {
 		throw new Error("Failed to history stats");
 	}
 
-	const stats: HistoryStats = await result.json();
+	const stats: ReviewsProgress = await result.json();
 	return stats;
 }

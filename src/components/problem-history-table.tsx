@@ -30,7 +30,7 @@ type ReviewHistoryResponse = {
 };
 
 async function fetchRecentReviews(): Promise<ReviewHistoryResponse> {
-	const result = await fetch("http://localhost:4200/problems/history?key=all");
+	const result = await fetch("/api/problems/history?key=all");
 
 	if (!result.ok) {
 		throw new Error("Failed to fetch review count");

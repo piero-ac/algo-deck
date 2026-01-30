@@ -13,19 +13,16 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 
-type ReviewCountResponse = {
-	review_count: number;
-};
-
 async function fetchReviewCount(): Promise<number> {
-	const result = await fetch("http://localhost:4200/reviews/count");
+	// TODO: change 1 to appropriate userId when auth is added
+	const result = await fetch("/api/reviews/count/1");
 
 	if (!result.ok) {
 		throw new Error("Failed to fetch review count");
 	}
 
-	const rows: ReviewCountResponse[] = await result.json();
-	return rows[0]?.review_count ?? 0;
+	const count = await result.json();
+	return count;
 }
 
 export function ReviewsCard() {

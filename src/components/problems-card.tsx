@@ -10,14 +10,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "@tanstack/react-router";
+import { type ReviewsProgress } from "@/routes";
 
 export function ProblemsCard({
-	problemCount,
-	reviewedProblemsCount,
-}: {
-	problemCount: number;
-	reviewedProblemsCount: number;
-}) {
+	totalProblems,
+	remaining,
+	reviewed,
+}: ReviewsProgress) {
 	const navigate = useNavigate();
 
 	return (
@@ -25,10 +24,8 @@ export function ProblemsCard({
 			<CardHeader>
 				<CardTitle>Problems</CardTitle>
 				<CardAction>
-					<Badge variant="default">{reviewedProblemsCount}</Badge>
-					<Badge variant="destructive">
-						{problemCount - reviewedProblemsCount}
-					</Badge>
+					<Badge variant="default">{reviewed}</Badge>
+					<Badge variant="destructive">{remaining}</Badge>
 				</CardAction>
 				<CardDescription>Remaining Problems</CardDescription>
 			</CardHeader>

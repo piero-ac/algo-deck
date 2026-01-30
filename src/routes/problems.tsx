@@ -60,7 +60,7 @@ function RouteComponent() {
 		queryKey: ["problems", search, page],
 		queryFn: async (): Promise<SearchDataResponse> => {
 			const result = await fetch(
-				`http://localhost:4200/problems?search=${encodeURIComponent(search)}&page=${page}`,
+				`/api/problems?search=${encodeURIComponent(search)}&page=${page}`,
 			);
 			if (!result.ok) throw new Error("Failed to fetch problems");
 			return result.json();
