@@ -9,10 +9,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-type ReviewHistoryResponse = {
-	reviews: ReviewHistoryItem[];
-};
-
 type ReviewHistoryItem = {
 	id: number;
 	problemNumber: number;
@@ -23,7 +19,7 @@ type ReviewHistoryItem = {
 	};
 };
 
-async function fetchRecentReviews(): Promise<ReviewHistoryResponse> {
+async function fetchRecentReviews(): Promise<ReviewHistoryItem[]> {
 	// TODO: change 1 to appropriate userId when auth is added
 	const result = await fetch("/api/problems/history/all/1");
 
@@ -31,12 +27,17 @@ async function fetchRecentReviews(): Promise<ReviewHistoryResponse> {
 		throw new Error("Failed to fetch review count");
 	}
 
-	const data: ReviewHistoryResponse = await result.json();
+	const data = await result.json();
+	console.log(data);
 	return data;
 }
 
 export function ReviewHistoryTable() {
-	const { data, isLoading, isError, error } = useQuery({
+	const {
+		data: history,
+		isLoading,
+		isError,
+	} = useQuery({
 		queryKey: ["reviews", "history"],
 		queryFn: fetchRecentReviews,
 		throwOnError: (error) => {
@@ -64,8 +65,8 @@ export function ReviewHistoryTable() {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{data?.reviews?.length ? (
-					data.reviews.map((review) => {
+				{history?.length ? (
+					history.map((review) => {
 						const rating = mapRating(review.rating);
 						return (
 							<TableRow key={review.id}>
