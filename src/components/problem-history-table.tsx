@@ -31,7 +31,8 @@ type ReviewHistoryItem = {
 };
 
 async function fetchRecentReviews(): Promise<ReviewHistoryResponse> {
-	const result = await fetch("/api/problems/history/all");
+	// TODO: change 1 to appropriate userId when auth is added
+	const result = await fetch("/api/problems/history/all/1");
 
 	if (!result.ok) {
 		throw new Error("Failed to fetch review count");
@@ -69,7 +70,7 @@ export function ProblemHistoryTable() {
 						return (
 							<TableRow key={review.id}>
 								<TableCell>
-									{new Date(review.reviewedAt).toLocaleDateString("en-US")}
+									{review.reviewedAt.toLocaleDateString("en-US")}
 								</TableCell>
 								<TableCell>{review.problemNumber}</TableCell>
 								<TableCell>{review.problem.title}</TableCell>
