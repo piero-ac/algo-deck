@@ -35,7 +35,7 @@ async function fetchRecentReviews(): Promise<ReviewHistoryResponse> {
 	return data;
 }
 
-export function ProblemHistoryTable() {
+export function ReviewHistoryTable() {
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["reviews", "history"],
 		queryFn: fetchRecentReviews,

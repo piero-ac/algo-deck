@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ReviewsCard } from "@/components/reviews-card";
 import { ProblemsCard } from "@/components/problems-card";
-import { ProblemHistoryTable } from "@/components/problem-history-table";
+import { ReviewHistoryTable } from "@/components/review-history-table";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -32,7 +32,7 @@ function App() {
 			</div>
 			{/* Recent History Table */}
 			<div className="w-200">
-				<ProblemHistoryTable />
+				<ReviewHistoryTable />
 			</div>
 		</div>
 	);
