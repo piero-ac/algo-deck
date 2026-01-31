@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState } from "react";
 
 // Define the Lesson type
 export type Lesson = {
-	problem_number: number;
-	problem_title: string;
-	problem_difficulty: string;
+	number: number;
+	title: string;
+	difficulty: string;
 };
 
 // Define the shape of the context
@@ -29,7 +29,7 @@ export const LessonsQueueProvider = ({
 
 	// Check if problem in queue
 	const inQueue = (lesson: Lesson) => {
-		return queue.some((item) => item.problem_number === lesson.problem_number);
+		return queue.some((item) => item.number === lesson.number);
 	};
 
 	// Add a new lesson to the queue
@@ -42,9 +42,7 @@ export const LessonsQueueProvider = ({
 	// Remove lesson from the queue
 	const removeFromQueue = (lesson: Lesson) =>
 		setQueue((prev) =>
-			prev.filter(
-				(problem) => lesson.problem_number !== problem.problem_number,
-			),
+			prev.filter((problem) => lesson.number !== problem.number),
 		);
 
 	// Remove the first lesson from the queue

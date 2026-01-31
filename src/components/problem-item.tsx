@@ -18,9 +18,9 @@ export function ProblemItem({
 	problemTitle: string;
 	problemDifficulty: string;
 	addProblemToLesson: (problem: {
-		problem_number: number;
-		problem_title: string;
-		problem_difficulty: string;
+		number: number;
+		title: string;
+		difficulty: string;
 	}) => void;
 	problemInQueue: boolean;
 }) {
@@ -41,9 +41,9 @@ export function ProblemItem({
 						size="sm"
 						onClick={() => {
 							addProblemToLesson({
-								problem_number: problemNumber,
-								problem_title: problemTitle,
-								problem_difficulty: problemDifficulty,
+								number: problemNumber,
+								title: problemTitle,
+								difficulty: problemDifficulty,
 							});
 						}}
 						disabled={problemInQueue}
