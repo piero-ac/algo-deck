@@ -28,7 +28,6 @@ async function fetchRecentReviews(): Promise<ReviewHistoryItem[]> {
 	}
 
 	const data = await result.json();
-	console.log(data);
 	return data;
 }
 
