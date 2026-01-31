@@ -2,20 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useLessonsQueue } from "@/context/lessonQueue";
 import { useSubmitReview } from "@/hooks/useSubmitReview";
 import { Button } from "@/components/ui/button";
+import { type Rating } from "@/hooks/useSubmitReview";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 
 export const Route = createFileRoute("/lessons")({
 	component: RouteComponent,
 });
 
-type Rating = "again" | "good" | "easy" | "hard";
-
 function RouteComponent() {
-	const {
-		queue,
-		removeNext,
-		// removeFromQueue
-	} = useLessonsQueue();
+	const { queue, removeNext } = useLessonsQueue();
 	const submitReview = useSubmitReview();
 
 	const currentLesson = queue[0];
@@ -24,9 +19,11 @@ function RouteComponent() {
 		return <h2 className="text-3xl text-center mt-10">No lessons here.....</h2>;
 
 	function handleRate(rating: Rating) {
+		// TODO: change 1 to appropriate userId when auth is added
 		submitReview.mutate({
-			problemNumber: currentLesson.problem_number,
+			problemNumber: currentLesson.number,
 			rating,
+			userId: 1,
 		});
 	}
 
@@ -35,7 +32,7 @@ function RouteComponent() {
 			<div className="text-center">
 				<h3>{queue.length} lesson's left</h3>
 				<h2 className="text-xl text-bold">
-					{currentLesson.problem_number}. {currentLesson.problem_title}
+					{currentLesson.number}. {currentLesson.title}
 				</h2>
 				{submitReview.isSuccess && (
 					<p className="text-xl text-green-500">
@@ -50,14 +47,19 @@ function RouteComponent() {
 			<div className="my-5 mx-auto">
 				<ButtonGroup>
 					<ButtonGroupText>Ratings</ButtonGroupText>
-					{["again", "easy", "good", "hard"].map((r) => (
+					{[
+						["again", "1"],
+						["easy", "4"],
+						["good", "3"],
+						["hard", "2"],
+					].map((r) => (
 						<Button
 							className="capitalize"
-							key={r}
-							onClick={() => handleRate(r as Rating)}
+							key={r[0]}
+							onClick={() => handleRate(r[1] as Rating)}
 							disabled={submitReview.isPending || submitReview.isSuccess}
 						>
-							{r}
+							{r[0]}
 						</Button>
 					))}
 				</ButtonGroup>
