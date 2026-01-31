@@ -11,10 +11,10 @@ type SearchDataResponse = {
 	page: number;
 	pageSize: number;
 	total: number;
-	results: {
-		problem_number: number;
-		problem_title: string;
-		problem_difficulty: string;
+	problems: {
+		number: number;
+		title: string;
+		difficulty: string;
 	}[];
 	totalPages: number;
 };
@@ -59,8 +59,9 @@ function RouteComponent() {
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["problems", search, page],
 		queryFn: async (): Promise<SearchDataResponse> => {
+			// TODO: change 1 to appropriate userId when auth is added
 			const result = await fetch(
-				`/api/problems?search=${encodeURIComponent(search)}&page=${page}`,
+				`/api/problems?search=${encodeURIComponent(search)}&page=${page}&limit=20&userId=1`,
 			);
 			if (!result.ok) throw new Error("Failed to fetch problems");
 			return result.json();
@@ -125,20 +126,20 @@ function RouteComponent() {
 				<div className="flex gap-4">
 					{/* Problems List Display */}
 					<div className="flex flex-col gap-1 flex-3">
-						{!isLoading && data?.results.length === 0 && (
+						{!isLoading && data?.problems.length === 0 && (
 							<p className="">No problems found.</p>
 						)}
 						{isLoading && <p>Loading...</p>}
 						{error && <p>Error: {(error as Error).message}</p>}
 						{data &&
 							data.total > 0 &&
-							data.results.map((problem) => {
+							data.problems.map((problem) => {
 								return (
 									<ProblemItem
-										key={problem.problem_number}
-										problemDifficulty={problem.problem_difficulty}
-										problemTitle={problem.problem_title}
-										problemNumber={problem.problem_number}
+										key={problem.number}
+										problemDifficulty={problem.difficulty}
+										problemTitle={problem.title}
+										problemNumber={problem.number}
 										addProblemToLesson={add}
 										problemInQueue={inQueue(problem)}
 									/>
@@ -157,18 +158,14 @@ function RouteComponent() {
 							queue.map((lesson) => {
 								return (
 									<div
-										key={lesson.problem_number}
+										key={lesson.number}
 										className="flex items-center mb-2 gap-3 "
 									>
 										<div className="text-center w-50">
-											<p className="text-sm">
-												{lesson.problem_title.slice(0, 20)}...
-											</p>
+											<p className="text-sm">{lesson.title.slice(0, 20)}...</p>
 										</div>
 										<div className="text-center">
-											<span className="font-bold">
-												[{lesson.problem_number}]
-											</span>
+											<span className="font-bold">[{lesson.number}]</span>
 											<Button
 												variant="destructive"
 												size="xs"
