@@ -3,76 +3,46 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
-
-type Rating = "again" | "good" | "easy" | "hard";
-
-type ReviewsCountApiResponse = {
-	review_count: number;
-}[];
+import { type Rating } from "@/hooks/useSubmitReview";
 
 type ReviewItem = {
+	userId: number;
 	problemNumber: number;
-	title: string;
-	slug: string;
-	nextReviewAt: string;
-	lastReview: string;
+	problem: {
+		title: string;
+	};
 };
 
-type ReviewsData = {
-	date: string;
-	count: number;
-	reviews: ReviewItem[];
-};
-
-type ReviewsApiResponse = {
-	date: string;
-	count: number;
-	reviews: {
-		problem_number: number;
-		next_review_at: string;
-		last_review: string;
-		problem_title: string;
-		problem_slug: string;
-	}[];
-};
+type ReviewsApiResponse = ReviewItem[];
 
 export const Route = createFileRoute("/reviews")({
 	component: RouteComponent,
-	loader: async (): Promise<ReviewsData> => {
-		const reviewsCountResult = await fetch("/api/reviews/count");
-		if (!reviewsCountResult.ok) {
+	loader: async (): Promise<ReviewsApiResponse> => {
+		// TODO: change 1 to appropriate userId when auth is added
+		const countResult = await fetch("/api/reviews/count/1");
+		if (!countResult.ok) {
 			throw new Error("Could not fetch review count");
 		}
-		const reviewsCount: ReviewsCountApiResponse =
-			await reviewsCountResult.json();
+		const reviewsCount: number = await countResult.json();
 
-		if (reviewsCount[0].review_count === 0) {
+		if (reviewsCount === 0) {
 			throw redirect({ to: "/" });
 		}
 
-		const reviewsDataResult = await fetch("/api/reviews/today");
+		// TODO: change 1 to appropriate userId when auth is added
+		const reviewsDataResult = await fetch("/api/reviews/due/1");
 		if (!reviewsDataResult.ok) {
 			throw new Error("Could not fetch reviews");
 		}
 		const reviewsData: ReviewsApiResponse = await reviewsDataResult.json();
 
-		return {
-			date: reviewsData.date,
-			count: reviewsData.count,
-			reviews: reviewsData.reviews.map((r) => ({
-				problemNumber: r.problem_number,
-				title: r.problem_title,
-				slug: r.problem_slug,
-				nextReviewAt: r.next_review_at,
-				lastReview: r.last_review,
-			})),
-		};
+		return reviewsData;
 	},
 });
 
 function RouteComponent() {
-	const data = Route.useLoaderData();
-	const [queue, setQueue] = useState<ReviewItem[]>(() => data.reviews);
+	const reviews = Route.useLoaderData();
+	const [queue, setQueue] = useState<ReviewItem[]>(() => reviews);
 	const submitReview = useSubmitReview();
 	const current = queue[0];
 
@@ -80,20 +50,22 @@ function RouteComponent() {
 		return <div>All reviews completed 🎉</div>;
 	}
 
-	if (!data) {
+	if (!reviews) {
 		return <div>No reviews due today 🎉</div>;
 	}
 
 	function handleRate(rating: Rating) {
+		// TODO: change 1 to appropriate userId when auth is added
 		submitReview.mutate(
 			{
 				problemNumber: current.problemNumber,
 				rating,
+				userId: 1,
 			},
 			{
 				onSuccess: () => {
-					// remove the front of the queue after successful submission
 					setQueue((q) => q.slice(1));
+					submitReview.reset();
 				},
 			},
 		);
@@ -104,29 +76,26 @@ function RouteComponent() {
 			<div className="text-center">
 				<h3>{queue.length} review(s) left</h3>
 				<h2 className="text-xl font-bold">
-					{current.problemNumber}. {current.title}
+					{current.problemNumber}. {current.problem.title}
 				</h2>
-				{submitReview.isSuccess && (
-					<p className="text-green-500 text-lg">
-						Next review on:{" "}
-						{new Date(submitReview.data.nextReviewAt).toLocaleDateString(
-							"en-US",
-						)}
-					</p>
-				)}
 			</div>
 
 			<div className="my-5 mx-auto">
 				<ButtonGroup>
 					<ButtonGroupText>Ratings</ButtonGroupText>
-					{["again", "easy", "good", "hard"].map((r) => (
+					{[
+						["again", "1"],
+						["easy", "4"],
+						["good", "3"],
+						["hard", "2"],
+					].map((r) => (
 						<Button
 							className="capitalize"
-							key={r}
-							onClick={() => handleRate(r as Rating)}
-							disabled={submitReview.isPending || submitReview.isSuccess}
+							key={r[0]}
+							onClick={() => handleRate(r[1] as Rating)}
+							disabled={submitReview.isPending}
 						>
-							{r}
+							{r[0]}
 						</Button>
 					))}
 				</ButtonGroup>
