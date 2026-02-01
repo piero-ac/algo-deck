@@ -10,6 +10,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { UserButton } from "@clerk/clerk-react";
 
 import { ModeToggle } from "@/components/mode-toggle";
 
@@ -65,6 +66,11 @@ export function AppSidebar() {
 							))}
 						</SidebarMenu>
 					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarGroup>
+					<SidebarContent>
+						<UserButton />
+					</SidebarContent>
 				</SidebarGroup>
 				<SidebarGroup>
 					<SidebarContent>
