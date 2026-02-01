@@ -40,6 +40,11 @@ declare module "@tanstack/react-router" {
 function App() {
 	const auth = useAuth();
 
+	// Wait for Clerk auth to finish loading
+	if (!auth.isLoaded) {
+		return <div>Loading…</div>;
+	}
+
 	return (
 		<LessonsQueueProvider>
 			<QueryClientProvider client={queryClient}>
