@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -18,16 +17,14 @@ export const Route = createFileRoute("/_authenticated")({
 function RouteComponent() {
 	return (
 		<>
-			<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-				<SidebarProvider>
-					<AppSidebar />
-					<main className="w-full">
-						<SidebarTrigger />
-						<Outlet />
-						<Toaster />
-					</main>
-				</SidebarProvider>
-			</ThemeProvider>
+			<SidebarProvider>
+				<AppSidebar />
+				<main className="w-full">
+					<SidebarTrigger />
+					<Outlet />
+					<Toaster />
+				</main>
+			</SidebarProvider>
 		</>
 	);
 }
