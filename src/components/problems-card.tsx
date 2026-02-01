@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "@tanstack/react-router";
-import { type ReviewsProgress } from "@/routes";
+import { type ReviewsProgress } from "@/routes/_authenticated";
 
 export function ProblemsCard({
 	totalProblems,
