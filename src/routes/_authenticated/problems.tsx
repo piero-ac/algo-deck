@@ -28,7 +28,6 @@ export const Route = createFileRoute("/_authenticated/problems")({
 });
 
 function RouteComponent() {
-	// const loaderData = Route.useLoaderData();
 	const searchParams = Route.useSearch();
 	const search = searchParams.search;
 	const page = searchParams.page;
@@ -52,24 +51,31 @@ function RouteComponent() {
 					page: 1, // Reset to page 1 on new search
 				}),
 				replace: true,
-			})
+			});
 		}
 	}, [searchDebounced, search, navigate]);
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["problems", search, page],
 		queryFn: async (): Promise<SearchDataResponse> => {
-			// TODO: change 1 to appropriate userId when auth is added
+			const token = (await window.Clerk?.session?.getToken()) as string;
 			const result = await fetch(
-				`/api/problems?search=${encodeURIComponent(search)}&page=${page}&limit=20&userId=1`,
-			)
+				`/api/problems?search=${encodeURIComponent(search)}&page=${page}&limit=20`,
+				{
+					method: "GET",
+					headers: {
+						Authorization: `Bearer ${token}`,
+						"Content-Type": "application/json",
+					},
+				},
+			);
 			if (!result.ok) throw new Error("Failed to fetch problems");
 			return result.json();
 		},
 		staleTime: 2 * 60 * 1000, // Data stays fresh for 2minutes
 		refetchOnWindowFocus: false, // Don't refetch when window regains focus
 		refetchOnMount: false, // Don't refetch when component mounts if data is cached
-	})
+	});
 
 	function handleSearchInput(text: string) {
 		setInput(text);
@@ -79,7 +85,7 @@ function RouteComponent() {
 		if (data && page < data.totalPages) {
 			navigate({
 				search: (prev) => ({ ...prev, page: prev.page + 1 }),
-			})
+			});
 		}
 	}
 
@@ -87,7 +93,7 @@ function RouteComponent() {
 		if (data && page > 1) {
 			navigate({
 				search: (prev) => ({ ...prev, page: prev.page - 1 }),
-			})
+			});
 		}
 	}
 
@@ -143,7 +149,7 @@ function RouteComponent() {
 										addProblemToLesson={add}
 										problemInQueue={inQueue(problem)}
 									/>
-								)
+								);
 							})}
 					</div>
 					{/* Lessons Queue Display */}
@@ -175,11 +181,11 @@ function RouteComponent() {
 											</Button>
 										</div>
 									</div>
-								)
+								);
 							})}
 					</div>
 				</div>
 			</div>
 		</div>
-	)
+	);
 }
