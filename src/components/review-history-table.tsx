@@ -21,7 +21,6 @@ type ReviewHistoryItem = {
 };
 
 async function fetchRecentReviews(token: string): Promise<ReviewHistoryItem[]> {
-	// TODO: change 1 to appropriate userId when auth is added
 	const result = await fetch("/api/problems/history/all", {
 		method: "GET",
 		headers: {

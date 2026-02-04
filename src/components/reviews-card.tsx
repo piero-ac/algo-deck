@@ -15,7 +15,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@clerk/clerk-react";
 
 async function fetchReviewCount(token: string): Promise<number> {
-	// TODO: change 1 to appropriate userId when auth is added
 	const result = await fetch("/api/reviews/count", {
 		method: "GET",
 		headers: {
