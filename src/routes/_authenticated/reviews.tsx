@@ -1,9 +1,11 @@
 import { useSubmitReview } from "@/hooks/useSubmitReview";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import { type Rating } from "@/hooks/useSubmitReview";
+import { useUser } from "@clerk/clerk-react";
+import { useEffect } from "react";
 
 type ReviewItem = {
 	userId: number;
@@ -26,7 +28,6 @@ export const Route = createFileRoute("/_authenticated/reviews")({
 			throw new Error("Not authenticated");
 		}
 
-		// TODO: change 1 to appropriate userId when auth is added
 		const countResult = await fetch("/api/reviews/count", {
 			method: "GET",
 			headers: {
@@ -43,7 +44,6 @@ export const Route = createFileRoute("/_authenticated/reviews")({
 			throw redirect({ to: "/" });
 		}
 
-		// TODO: change 1 to appropriate userId when auth is added
 		const reviewsDataResult = await fetch("/api/reviews/due", {
 			method: "GET",
 			headers: {
@@ -54,17 +54,29 @@ export const Route = createFileRoute("/_authenticated/reviews")({
 		if (!reviewsDataResult.ok) {
 			throw new Error("Could not fetch reviews");
 		}
-		const reviewsData: ReviewsApiResponse = await reviewsDataResult.json();
+		const reviewsData = await reviewsDataResult.json();
 
 		return reviewsData;
 	},
 });
 
 function RouteComponent() {
+	const { isLoaded, isSignedIn, user } = useUser();
+	const navigate = useNavigate();
 	const reviews = Route.useLoaderData();
 	const [queue, setQueue] = useState<ReviewItem[]>(() => reviews);
 	const submitReview = useSubmitReview();
 	const current = queue[0];
+
+	useEffect(() => {
+		if (isLoaded && !isSignedIn) {
+			navigate({ to: "/login" });
+		}
+	}, [isLoaded, isSignedIn, navigate]);
+
+	if (!isLoaded) {
+		return <div>Retrievin user info</div>;
+	}
 
 	if (!current) {
 		return <div>All reviews completed 🎉</div>;
@@ -74,13 +86,14 @@ function RouteComponent() {
 		return <div>No reviews due today 🎉</div>;
 	}
 
-	function handleRate(rating: Rating) {
-		// TODO: change 1 to appropriate userId when auth is added
+	async function handleRate(rating: Rating) {
+		const token = (await window.Clerk?.session?.getToken()) as string;
 		submitReview.mutate(
 			{
 				problemNumber: current.problemNumber,
 				rating,
-				userId: 1,
+				userId: user?.id!,
+				token,
 			},
 			{
 				onSuccess: () => {
