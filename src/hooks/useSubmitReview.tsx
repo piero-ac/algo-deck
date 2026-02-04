@@ -15,15 +15,20 @@ export function useSubmitReview() {
 			problemNumber,
 			rating,
 			userId,
+			token,
 		}: {
 			problemNumber: number;
 			rating: Rating;
-			userId: number;
+			userId: string;
+			token: string;
 		}): Promise<ReviewResponse> => {
 			const res = await fetch("/api/reviews/submit-review", {
 				method: "PUT",
-				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ userId, problemNumber, rating }),
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
 			});
 
 			if (!res.ok) {
