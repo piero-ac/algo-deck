@@ -67,7 +67,6 @@ export type ReviewsProgress = {
 };
 
 async function fetchReviewsProgress(token: string): Promise<ReviewsProgress> {
-	// TODO: change 1 to appropriate userId when auth is added
 	const result = await fetch("/api/reviews/progress", {
 		method: "GET",
 		headers: {
