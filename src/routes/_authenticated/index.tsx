@@ -21,7 +21,11 @@ function App() {
 
 	const { data } = useQuery({
 		queryKey: ["reviews", "progress"],
-		queryFn: fetchReviewsProgress,
+		queryFn: async () => {
+			const token = await getToken();
+			const data = await fetchReviewsProgress(token as string);
+			return data;
+		},
 		throwOnError: (error) => {
 			toast.error(error.message, { position: "top-right" });
 			return false;
@@ -62,9 +66,15 @@ export type ReviewsProgress = {
 	remaining: number;
 };
 
-async function fetchReviewsProgress(): Promise<ReviewsProgress> {
+async function fetchReviewsProgress(token: string): Promise<ReviewsProgress> {
 	// TODO: change 1 to appropriate userId when auth is added
-	const result = await fetch("/api/reviews/progress/1");
+	const result = await fetch("/api/reviews/progress", {
+		method: "GET",
+		headers: {
+			Authorization: `Bearer ${token}`,
+			"Content-Type": "application/json",
+		},
+	});
 
 	if (!result.ok) {
 		throw new Error("Failed to history stats");

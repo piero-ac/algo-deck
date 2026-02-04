@@ -12,10 +12,17 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@clerk/clerk-react";
 
-async function fetchReviewCount(): Promise<number> {
+async function fetchReviewCount(token: string): Promise<number> {
 	// TODO: change 1 to appropriate userId when auth is added
-	const result = await fetch("/api/reviews/count/1");
+	const result = await fetch("/api/reviews/count", {
+		method: "GET",
+		headers: {
+			Authorization: `Bearer ${token}`,
+			"Content-Type": "application/json",
+		},
+	});
 
 	if (!result.ok) {
 		throw new Error("Failed to fetch review count");
@@ -26,9 +33,14 @@ async function fetchReviewCount(): Promise<number> {
 }
 
 export function ReviewsCard() {
+	const { getToken } = useAuth();
 	const { data: review_count = 0 } = useQuery({
 		queryKey: ["reviews", "count"],
-		queryFn: fetchReviewCount,
+		queryFn: async () => {
+			const token = await getToken();
+			const data = await fetchReviewCount(token as string);
+			return data;
+		},
 		throwOnError: (error) => {
 			toast.error(error.message, { position: "top-right" });
 			return false;

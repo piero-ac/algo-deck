@@ -10,7 +10,7 @@ type ReviewItem = {
 	problemNumber: number;
 	problem: {
 		title: string;
-	}
+	};
 };
 
 type ReviewsApiResponse = ReviewItem[];
@@ -18,8 +18,22 @@ type ReviewsApiResponse = ReviewItem[];
 export const Route = createFileRoute("/_authenticated/reviews")({
 	component: RouteComponent,
 	loader: async (): Promise<ReviewsApiResponse> => {
+		await window.Clerk?.load();
+
+		const token = await window.Clerk?.session?.getToken();
+
+		if (!token) {
+			throw new Error("Not authenticated");
+		}
+
 		// TODO: change 1 to appropriate userId when auth is added
-		const countResult = await fetch("/api/reviews/count/1");
+		const countResult = await fetch("/api/reviews/count", {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+		});
 		if (!countResult.ok) {
 			throw new Error("Could not fetch review count");
 		}
@@ -30,7 +44,13 @@ export const Route = createFileRoute("/_authenticated/reviews")({
 		}
 
 		// TODO: change 1 to appropriate userId when auth is added
-		const reviewsDataResult = await fetch("/api/reviews/due/1");
+		const reviewsDataResult = await fetch("/api/reviews/due", {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+		});
 		if (!reviewsDataResult.ok) {
 			throw new Error("Could not fetch reviews");
 		}
@@ -68,7 +88,7 @@ function RouteComponent() {
 					submitReview.reset();
 				},
 			},
-		)
+		);
 	}
 
 	return (
@@ -106,5 +126,5 @@ function RouteComponent() {
 				<p>Error: {(submitReview.error as Error).message}</p>
 			)}
 		</div>
-	)
+	);
 }

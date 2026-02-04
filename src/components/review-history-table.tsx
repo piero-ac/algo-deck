@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/clerk-react";
 
 type ReviewHistoryItem = {
 	id: number;
@@ -19,9 +20,15 @@ type ReviewHistoryItem = {
 	};
 };
 
-async function fetchRecentReviews(): Promise<ReviewHistoryItem[]> {
+async function fetchRecentReviews(token: string): Promise<ReviewHistoryItem[]> {
 	// TODO: change 1 to appropriate userId when auth is added
-	const result = await fetch("/api/problems/history/all/1");
+	const result = await fetch("/api/problems/history/all", {
+		method: "GET",
+		headers: {
+			Authorization: `Bearer ${token}`,
+			"Content-Type": "application/json",
+		},
+	});
 
 	if (!result.ok) {
 		throw new Error("Failed to fetch review count");
@@ -32,13 +39,18 @@ async function fetchRecentReviews(): Promise<ReviewHistoryItem[]> {
 }
 
 export function ReviewHistoryTable() {
+	const { getToken } = useAuth();
 	const {
 		data: history,
 		isLoading,
 		isError,
 	} = useQuery({
 		queryKey: ["reviews", "history"],
-		queryFn: fetchRecentReviews,
+		queryFn: async () => {
+			const token = await getToken();
+			const data = await fetchRecentReviews(token as string);
+			return data;
+		},
 		throwOnError: (error) => {
 			toast.error(error.message, { position: "top-right" });
 			return false;
