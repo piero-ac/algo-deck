@@ -7,24 +7,22 @@ type ReviewResponse = {
 	nextReviewAt: Date;
 };
 
-export type Rating = "1" | "2" | "3" | "4";
+export type Rating = "AGAIN" | "HARD" | "GOOD" | "EASY";
 
 export function useSubmitReview() {
 	return useMutation({
 		mutationFn: async ({
 			problemNumber,
 			rating,
-			userId,
 			token,
 		}: {
 			problemNumber: number;
 			rating: Rating;
-			userId: string;
 			token: string;
 		}): Promise<ReviewResponse> => {
 			const res = await fetch("/api/reviews/submit-review", {
 				method: "PUT",
-				body: JSON.stringify({ userId, problemNumber, rating }),
+				body: JSON.stringify({ problemNumber, rating }),
 				headers: {
 					Authorization: `Bearer ${token}`,
 					"Content-Type": "application/json",
