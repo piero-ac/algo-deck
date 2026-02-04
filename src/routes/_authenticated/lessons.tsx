@@ -1,30 +1,41 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useLessonsQueue } from "@/context/lessonQueue";
 import { useSubmitReview } from "@/hooks/useSubmitReview";
 import { Button } from "@/components/ui/button";
 import { type Rating } from "@/hooks/useSubmitReview";
 import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
+import { useUser } from "@clerk/clerk-react";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/lessons")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
+	const { isLoaded, isSignedIn, user } = useUser();
 	const { queue, removeNext } = useLessonsQueue();
 	const submitReview = useSubmitReview();
+	const navigate = useNavigate();
 
 	const currentLesson = queue[0];
+
+	useEffect(() => {
+		if (isLoaded && !isSignedIn) {
+			navigate({ to: "/login" });
+		}
+	}, [isLoaded, isSignedIn, navigate]);
 
 	if (!currentLesson)
 		return <h2 className="text-3xl text-center mt-10">No lessons here.....</h2>;
 
-	function handleRate(rating: Rating) {
-		// TODO: change 1 to appropriate userId when auth is added
+	async function handleRate(rating: Rating) {
+		const token = (await window.Clerk?.session?.getToken()) as string;
 		submitReview.mutate({
 			problemNumber: currentLesson.number,
 			rating,
-			userId: 1,
-		})
+			userId: user?.id!,
+			token,
+		});
 	}
 
 	return (
@@ -73,7 +84,7 @@ function RouteComponent() {
 				<Button
 					onClick={() => {
 						submitReview.reset();
-						removeNext()
+						removeNext();
 					}}
 					disabled={
 						queue.length === 0 ||
@@ -88,7 +99,7 @@ function RouteComponent() {
 					onClick={() => {
 						if (!confirm("Remove this problem from lessons?")) return;
 						submitReview.reset();
-						removeNext()
+						removeNext();
 					}}
 					disabled={submitReview.isPending || submitReview.isSuccess}
 					variant="destructive"
@@ -97,5 +108,5 @@ function RouteComponent() {
 				</Button>
 			</div>
 		</div>
-	)
+	);
 }
