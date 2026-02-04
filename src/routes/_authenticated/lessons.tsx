@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/lessons")({
 });
 
 function RouteComponent() {
-	const { isLoaded, isSignedIn, user } = useUser();
+	const { isLoaded, isSignedIn } = useUser();
 	const { queue, removeNext } = useLessonsQueue();
 	const submitReview = useSubmitReview();
 	const navigate = useNavigate();
@@ -33,7 +33,6 @@ function RouteComponent() {
 		submitReview.mutate({
 			problemNumber: currentLesson.number,
 			rating,
-			userId: user?.id!,
 			token,
 		});
 	}
@@ -58,19 +57,13 @@ function RouteComponent() {
 			<div className="my-5 mx-auto">
 				<ButtonGroup>
 					<ButtonGroupText>Ratings</ButtonGroupText>
-					{[
-						["again", "1"],
-						["easy", "4"],
-						["good", "3"],
-						["hard", "2"],
-					].map((r) => (
+					{["AGAIN", "EASY", "GOOD", "HARD"].map((r) => (
 						<Button
-							className="capitalize"
-							key={r[0]}
-							onClick={() => handleRate(r[1] as Rating)}
+							key={r}
+							onClick={() => handleRate(r as Rating)}
 							disabled={submitReview.isPending || submitReview.isSuccess}
 						>
-							{r[0]}
+							{r}
 						</Button>
 					))}
 				</ButtonGroup>
